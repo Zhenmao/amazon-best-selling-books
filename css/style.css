@@ -1,0 +1,44 @@
+body {
+	background-color: #24303E;
+	color: #999;
+	fill: #999;
+	font-family: arial, sans-serif;
+	font-size: 12px;
+}
+
+h1 {
+	font-size: 24px;
+	text-align: center;
+}
+
+.axis text {
+	fill: #999;
+}
+
+.axis path {
+	stroke: none;
+}
+
+.axis line {
+	stroke: #999;
+}
+
+.line {
+	fill: none;
+	stroke-width: 3px;
+}
+
+.voronoi path {
+	fill: none;
+	pointer-events: all;
+}
+
+#tooltip {
+	position: absolute;
+	font-size: 16px;
+}
+
+#tooltip span {
+	font-weight: bold;
+	color: white;
+}
