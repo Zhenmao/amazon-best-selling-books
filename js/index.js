@@ -31,12 +31,12 @@ const numberOfTimesBooksdata = d3.nest()
 // Add number of times appearing on chart to original booksdata
 const dataCircles = join(numberOfTimesBooksdata, booksdata, "key", "asin", (booksdatum, numberOfTimesBooksdatum) => {
 	return {
-		asin: booksdatum.asin,
-		title: booksdatum.title,
-		author: booksdatum.author,
 		year: booksdatum.year,
 		rank: booksdatum.rank,
-		numberOfTimes: numberOfTimesBooksdatum.value
+		numberOfTimes: numberOfTimesBooksdatum.value,
+		title: booksdatum.title,
+		author: booksdatum.author,
+		asin: booksdatum.asin,
 	};
 });
 
@@ -239,20 +239,20 @@ svg.append("g")
 	.enter()
 	.append("path")
 		.attr("d", d => "M" + d.join("L") + "Z")
-		.on("mouseover", mouseover)
-		.on("mouseout", mouseout);
+		.on("mouseover", d => mouseover(d.data))
+		.on("mouseout", d => mouseout(d.data));
 
 function mouseover(d) {
 	// Dim all circles
 	d3.selectAll(".circle")
 			.style("opacity", 0.4);
 	// Highlight circles with the same asin as the hovered circle
-	const selectedCircles = d3.selectAll(`.circle-${d.data.asin}`)
+	const selectedCircles = d3.selectAll(`.circle-${d.asin}`)
 			.style("opacity", 1);
 	// Show the trend line
-	const selectedLine = d3.select(`#line-${d.data.asin}`)
+	const selectedLine = d3.select(`#line-${d.asin}`)
 			.style("opacity", 1);
-	showTooltip(d.data);
+	showTooltip(d);
 }
 
 function mouseout(d) {
@@ -260,7 +260,7 @@ function mouseout(d) {
 	d3.selectAll(".circle")
 			.style("opacity", 1);
 	// Hide the trend line
-	d3.select(`#line-${d.data.asin}`)
+	d3.select(`#line-${d.asin}`)
 			.style("opacity", 0);
 	hideTooltip();
 }
@@ -285,6 +285,58 @@ function hideTooltip() {
 }
 
 //////////////////////////////////////////////////////////////
+//////////////////////// Data table //////////////////////////
+//////////////////////////////////////////////////////////////
+
+// Table headers set up
+const headers = [
+		{ key: "year", display: "Year", width: "5%" },
+		{ key: "rank", display: "Rank", width: "5%" },
+		{ key: "numberOfTimes", display: "Years In Chart", width: "5%" },
+		{ key: "title", display: "Book Title", width: "60%" },
+		{ key: "author", display: "Author", width: "15%" },
+		{ key: "asin", display: "Asin", width: "10%" }
+	];
+
+// To enable position fixed header and scrollable body
+// Use separate tables for header and body
+
+const tableHeaders = d3.select("#table")
+	.append("div")
+		.attr("id", "table-headers")
+	.append("table")
+	.append("thead").append("tr")
+	.selectAll("th")
+	.data(headers)
+	.enter()
+	.append("th")
+		.text(d => d.display)
+		.style("width", d => d.width);
+
+const tableBody = d3.select("#table")
+	.append("div")
+		.attr("id", "table-body")
+	.append("table").append("tbody");
+
+const tableRows = tableBody
+	.selectAll("tr")
+	.data(dataCircles)
+	.enter()
+	.append("tr");
+
+tableRows
+		.style("color", row => colorScale(row.numberOfTimes))
+	.selectAll("td")
+	.data(row => headers.map(header => ({ "key": header.key, "value": row[header.key], "width": header.width })))
+	.enter()
+	.append("td")
+		.text(d => d.value)
+		.style("width", d => d.width);
+
+tableRows.on("mouseover", mouseover)
+		.on("mouseout", mouseout);
+
+//////////////////////////////////////////////////////////////
 ///////////////////// Helper functions ///////////////////////
 //////////////////////////////////////////////////////////////
 
@@ -305,8 +357,6 @@ function hideTooltip() {
 		}
 		return output;
 	}
-
-
 
 
 

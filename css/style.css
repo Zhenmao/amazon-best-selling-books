@@ -42,3 +42,24 @@ h1 {
 	font-weight: bold;
 	color: white;
 }
+
+/*Table*/
+#table {
+	position: relative;
+}
+
+table {
+	width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+	cursor: default;
+}
+
+table th {
+	text-align: left;
+}
+
+#table-body {
+	overflow: auto;
+	height: 180px;
+}
